@@ -3,3 +3,4 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 from flask_bcrypt import Bcrypt
+
