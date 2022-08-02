@@ -23,7 +23,11 @@ mysql = MySQL(app)
 
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM best_movies limit 20')
+    movies = cursor.fetchall()
+    #print(movies[2])
+    return render_template('example.html', movies = movies)
 
 
 
@@ -38,7 +42,7 @@ def login():
         password = request.form['password']
         # Check if account exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s ', (username,))
+        cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
         # Fetch one record and return result
         account = cursor.fetchone()
 
@@ -59,7 +63,7 @@ def login():
             # Account doesnt exist or username/password incorrect
             msg = 'Incorrect username/password!'
     # Show the login form with message (if any)
-    return render_template('index.html', msg=msg)
+    return render_template('login.html', msg=msg)
 
 
 # http://localhost:5000/python/logout - this will be the logout page
