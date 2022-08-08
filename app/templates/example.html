@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-
+{% block title %}Main{% endblock %}
 {% block content %}
   <div class="row mb-2">
     <h1 class="my-3">Top Movies</h1>
@@ -12,7 +12,7 @@
               <h3 class="mb-0">{{ movie.title }}</h3>
               <div class="mb-1 text-muted">{{ movie.year }}</div>
               <p class="card-text mb-auto">{{ movie.crew }}.</p>
-              <a href="#" class="stretched-link">Continue reading</a>
+              <a href="info_movie/{{ movie.id }}" class="stretched-link">Continue reading</a>
             </div>
             <div class="col-auto  d-lg-block">
               <img class="bd-placeholder-img" width="200" height="250" src="{{ movie.image }}">

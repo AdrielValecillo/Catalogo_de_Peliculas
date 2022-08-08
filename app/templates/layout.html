@@ -29,11 +29,17 @@
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
           <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
         </form>
-
-        <div class="text-end">
-          <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
-          <a href="{{ url_for('register') }}" class="btn btn-warning">Sign-up</a>
-        </div>
+        {% if  "loggedin" in session %}
+          <div class="text-end">
+              <a href="{{ url_for('profile') }}" class="btn btn-outline-light me-2">Profile</a>
+              <a href="{{ url_for('logout') }}" class="btn btn-warning">Logout</a>
+            </div>
+          {% else %}
+            <div class="text-end">
+              <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">Login</a>
+              <a href="{{ url_for('register') }}" class="btn btn-warning">Sign-up</a>
+            </div>
+        {% endif %}
       </div>
     </div>
   </header>

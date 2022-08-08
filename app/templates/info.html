@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block title %}Info about {{ movie.title }} {% endblock %}
+
+{% block content %}
+
+<div class="row p-4 p-md-5 my-4 mb-4 text-white rounded bg-dark">
+    <div class="col-12 col-lg-6">
+      <h1 class="display-4 fst-italic">{{ movie.title }}</h1>
+      <p class="lead my-2">Año: {{ movie.crew }}.</p>
+      <p class="lead my-2"> Ranking de IMDb: {{ movie.imDbRating }} </p>
+      <p class="lead mb-2"> {{ movie.year }} </p>
+      <p class="lead mb-2">Tipo: {{ data.type }} </p>
+      <p class="lead mb-2">Duración: {{ data.runtimeStr }} </p>
+      <p class="lead mb-2"> {{ data.plot }} </p>
+      <p class="lead mb-2"> Premios: {{ data.awards }} </p>
+
+    </div>
+    <div class="col-12 col-lg-6">
+        <img src="{{ data.image }}" class="my-2 img-fluid border" width="400px" alt="...">
+    </div>
+  </div>
+
+
+{% endblock %}

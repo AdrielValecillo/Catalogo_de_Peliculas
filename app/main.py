@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
+import requests
 from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
@@ -67,7 +68,7 @@ def login():
 
 
 # http://localhost:5000/python/logout - this will be the logout page
-@app.route('/pythonlogin/logout')
+@app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
    session.pop('loggedin', None)
@@ -76,8 +77,9 @@ def logout():
    # Redirect to login page
    return redirect(url_for('login'))
 
+
 # http://localhost:5000/pythinlogin/register - this will be the registration page, we need to use both GET and POST requests
-@app.route('/pythonlogin/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     # Output message if something goes wrong...
     msg = ''
@@ -130,17 +132,20 @@ def verify_email(cursor, email):
         return False
 
 # http://localhost:5000/pythinlogin/home - this will be the home page, only accessible for loggedin users
-@app.route('/pythonlogin/home')
+@app.route('/home')
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
         # User is loggedin show them the home page
-        return render_template('home.html', username=session['username'])
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM best_movies limit 20')
+        movies = cursor.fetchall()
+        return render_template('example.html', username=session['username'], movies=movies)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
 # http://localhost:5000/pythinlogin/profile - this will be the profile page, only accessible for loggedin users
-@app.route('/pythonlogin/profile')
+@app.route('/profile')
 def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
@@ -152,6 +157,28 @@ def profile():
         return render_template('profile.html', account=account)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
+
+@app.route('/info_movie/<id>')
+def info_movie(id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM best_movies WHERE id = %s', (id))
+    movies = cursor.fetchone()
+    full_data = get_full_data(str(movies['imdb_id']))
+    print(movies['imdb_id'])
+    return render_template('info.html', movie=movies, data=full_data)
+
+
+def get_full_data(idmb):
+    _id = str(idmb)
+    r = requests.get('https://imdb-api.com/en/API/Title/k_96qlv8f3/' + _id)
+    print(r.json())
+    return r.json()
+
+#get_full_data("tt0110413")
+
+
+
+
 
 
 
