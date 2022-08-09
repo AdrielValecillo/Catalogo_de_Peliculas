@@ -4,6 +4,7 @@ import MySQLdb.cursors
 import re
 import requests
 from flask_bcrypt import Bcrypt
+from flask_paginate import Pagination, get_page_parameter
 
 app = Flask(__name__)
 
@@ -24,11 +25,26 @@ mysql = MySQL(app)
 
 @app.route('/')
 def index():
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    limit=10
+    offset = page * limit - limit
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM best_movies limit 20')
+    cursor.execute('SELECT * FROM best_movies')
     movies = cursor.fetchall()
-    #print(movies[2])
-    return render_template('example.html', movies = movies)
+    total = len(movies)
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('SELECT * FROM best_movies limit %s OFFSET %s', (limit, offset))
+    data = cur.fetchall()
+    cur.close()
+
+    pagination = Pagination(page=page, total=total, search=search, record_name='movies', per_page=limit)
+
+    return render_template('example.html', movies=data, pagination=pagination)
 
 
 
@@ -161,11 +177,21 @@ def profile():
 @app.route('/info_movie/<id>')
 def info_movie(id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM best_movies WHERE id = %s', (id))
+    cursor.execute('SELECT * FROM best_movies WHERE id = %s', (id,))
     movies = cursor.fetchone()
     full_data = get_full_data(str(movies['imdb_id']))
     print(movies['imdb_id'])
     return render_template('info.html', movie=movies, data=full_data)
+
+@app.route('/resultado')
+def resultado():
+    busqueda = "%" + request.args.get("buscar") + "%"
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM best_movies WHERE fullTitle like %s OR crew LIKE %s', (busqueda, busqueda))
+    movies = cursor.fetchall()
+    return render_template("resultados.html", movies=movies)
+
+
 
 
 def get_full_data(idmb):
