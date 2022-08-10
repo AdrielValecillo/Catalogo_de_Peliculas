@@ -9,7 +9,5 @@
   </component>
   <component name="PackageRequirementsSettings">
     <option name="versionSpecifier" value="Strong equality (==x.y.z)" />
-    <option name="modifyBaseFiles" value="true" />
-    <option name="keepMatchingSpecifier" value="false" />
   </component>
 </module>
