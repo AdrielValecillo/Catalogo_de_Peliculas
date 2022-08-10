@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
@@ -156,7 +156,7 @@ def home():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM best_movies limit 20')
         movies = cursor.fetchall()
-        return render_template('example.html', username=session['username'], movies=movies)
+        return render_template('home.html', username=session['username'], movies=movies)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -180,8 +180,10 @@ def info_movie(id):
     cursor.execute('SELECT * FROM best_movies WHERE id = %s', (id,))
     movies = cursor.fetchone()
     full_data = get_full_data(str(movies['imdb_id']))
+    comments = get_comments(id)
+    total = len(comments)
     print(movies['imdb_id'])
-    return render_template('info.html', movie=movies, data=full_data)
+    return render_template('info.html', movie=movies, data=full_data, comments=comments, total=total)
 
 @app.route('/resultado')
 def resultado():
@@ -192,6 +194,12 @@ def resultado():
     return render_template("resultados.html", movies=movies)
 
 
+def get_comments(movie_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""SELECT cm.*, ac.username FROM pythonlogin.comments AS cm
+                    INNER JOIN pythonlogin.accounts AS ac ON ac.id = cm.account_id
+                    WHERE cm.movie_id = %s ORDER BY cm.created_at DESC""", (movie_id,))
+    return cursor.fetchall()
 
 
 def get_full_data(idmb):
@@ -200,8 +208,23 @@ def get_full_data(idmb):
     print(r.json())
     return r.json()
 
+
 #get_full_data("tt0110413")
 
+@app.route('/comment_create', methods=['POST'])
+def comment_create():
+    if request.method == 'POST':
+        user = request.form['account_id']
+        movie = request.form['movie_id']
+        comment = request.form['message']
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("""INSERT INTO pythonlogin.comments 
+                        (id, account_id, message, approved, movie_id)
+                        VALUES(NULL, %s, %s, true , %s)""", (user, comment, movie))
+        mysql.connection.commit()
+        flash('Comentario Agregado Correctamente')
+        return redirect(request.referrer)
 
 
 
