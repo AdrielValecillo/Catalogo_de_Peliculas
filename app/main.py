@@ -14,10 +14,10 @@ bcrypt = Bcrypt()
 app.secret_key = 'your secret key'
 
 # Enter your database connection details below
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'pythonlogin'
+app.config['MYSQL_HOST'] = 'y6aj3qju8efqj0w1.cbetxkdyhwsb.us-east-1.rds.amazonaws.com'
+app.config['MYSQL_USER'] = 'be0srk352mdaxc4r'
+app.config['MYSQL_PASSWORD'] = 'c3d00smzwyub3y1p'
+app.config['MYSQL_DB'] = 'bgzjtrebxdcn256g'
 
 # Intialize MySQL
 mysql = MySQL(app)
