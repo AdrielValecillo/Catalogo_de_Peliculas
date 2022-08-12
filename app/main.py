@@ -87,14 +87,14 @@ def login():
 @app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
-   session.pop('loggedin', None)
-   session.pop('id', None)
-   session.pop('username', None)
-   # Redirect to login page
-   return redirect(url_for('login'))
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    # Redirect to login page
+    return redirect(url_for('login'))
 
 
-# http://localhost:5000/pythinlogin/register - this will be the registration page, we need to use both GET and POST requests
+# this will be the registration page, we need to use both GET and POST requests
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # Output message if something goes wrong...
@@ -196,8 +196,8 @@ def resultado():
 
 def get_comments(movie_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("""SELECT cm.*, ac.username FROM pythonlogin.comments AS cm
-                    INNER JOIN pythonlogin.accounts AS ac ON ac.id = cm.account_id
+    cursor.execute("""SELECT cm.*, ac.username FROM comments AS cm
+                    INNER JOIN accounts AS ac ON ac.id = cm.account_id
                     WHERE cm.movie_id = %s ORDER BY cm.created_at DESC""", (movie_id,))
     return cursor.fetchall()
 
@@ -219,7 +219,7 @@ def comment_create():
         comment = request.form['message']
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("""INSERT INTO pythonlogin.comments 
+        cursor.execute("""INSERT INTO comments 
                         (id, account_id, message, approved, movie_id)
                         VALUES(NULL, %s, %s, true , %s)""", (user, comment, movie))
         mysql.connection.commit()
