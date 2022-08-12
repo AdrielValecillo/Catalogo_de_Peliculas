@@ -232,4 +232,4 @@ def comment_create():
 
 
 if __name__  == "__main__":
-    app.run(debug=True)
+    app.run()
